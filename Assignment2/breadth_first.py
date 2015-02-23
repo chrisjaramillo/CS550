@@ -22,7 +22,7 @@ class breadth_first(SearchStrategy):
     def g(cls, parentnode, action, childnode):
         '''
         '''
-        return parentnode.get_g()
+        return parentnode.get_g()+1
         
     
     @classmethod

@@ -16,4 +16,15 @@ class depth_first(SearchStrategy):
         '''
         Constructor
         '''
+    @classmethod
+    def g(cls, parentnode, action, childnode):
+        '''
+        '''
+        return parentnode.get_g()-1
         
+    
+    @classmethod
+    def h(cls, state):
+        '''
+        '''
+        return 0
