@@ -4,7 +4,6 @@ Created on Feb 22, 2015
 @author: Christopher Jaramillo
 '''
 from Representation import Problem
-from TileBoard import TileBoard
 
 class NPuzzle(Problem):
     '''
@@ -15,8 +14,8 @@ class NPuzzle(Problem):
         '''
         Constructor
         '''
-        super(NPuzzle, self).init(force_state, **kwargs)
-        self.tileBoard = TileBoard(n, force_state=force_state)
+        super(NPuzzle, self).__init__(force_state, **kwargs)
+        self.n = n
     
     def result(self, state, action):
         return state.move(action)

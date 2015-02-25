@@ -4,16 +4,13 @@ Created on Feb 22, 2015
 @author: cxj8923
 '''
 
-import SearchStrategy
-from searchspace import Node
-
-class breadth_first(SearchStrategy):
+class breadth_first():
     '''
     classdocs
     '''
 
 
-    def __init__(self, params):
+    def __init__(self):
         '''
         Constructor
         '''
@@ -30,3 +27,4 @@ class breadth_first(SearchStrategy):
         '''
         '''
         return 0
+    

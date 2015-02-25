@@ -4,14 +4,10 @@ Created on Feb 22, 2015
 @author: cxj8923
 '''
 
-import SearchStrategy
-
-class manhattan(SearchStrategy):
+class manhattan():
     '''
     classdocs
     '''
-
-
     def __init__(self, params):
         '''
         Constructor
@@ -21,8 +17,14 @@ class manhattan(SearchStrategy):
     def g(cls, parentnode, action, childnode):
         '''
         '''
+        return parentnode.get_g()+1
     
     @classmethod
     def h(cls, state):
         '''
         '''
+        middle = (state.boardsize-1) / 2
+        r, c = state.empty
+        moves = abs(r-middle)+abs(c-middle)
+        return moves
+        

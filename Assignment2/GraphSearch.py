@@ -4,25 +4,48 @@ Created on Feb 23, 2015
 @author: Christopher
 '''
 from NPuzzle import NPuzzle
+from utils import *
+from searchspace import Explored
+from searchspace import Node
+from searchspace import print_nodes
+from TileBoard import TileBoard
 
 def graph_search(problem, debug=False):
-    '''
-    From in class notes on search
-    frontier = problem.initial_state() # priority queue based on lowest cost
+    initState = TileBoard(problem.n, problem.initial)
+    initialNode = Node(problem, initState)
+    frontier = PriorityQueue()
+    frontier.append(initialNode)
     done = found = False
-    explored = {} # keep track of nodes we have checked
-    while not done
-        node = frontier.get_node() # remove state
-        explored = union(explored, node)
-        if node in problem.goals()
+    explored = Explored()
+    solution = None
+    while not done:
+        node = frontier.pop()
+        explored.add(node.state)
+        if node.state.solved():
             found = done = True
-        else
-            # only add novel results from the current node
-            nodes = setdiff(results from actions(node), union(frontier,explored))
-            for n in nodes
-            estimate a cost g’(n) + h’(n)
-            frontier.add_nodes(nodes) # merge new nodes in by estimated cost
-        done = frontier.is_empty()
-    return solution if found else return failure
-    '''
-    
+            solution = node
+        else:
+            actions = problem.actions(node.state)
+            for action in actions:
+                #print 'Previous state:'
+                #print node.__repr__()
+                #print 'Applying action ' + str(action)
+                newState = node.problem.result(node.state, action)
+                #print 'New state:'
+                newNode = Node(problem, newState, node, action)
+                #print newNode.__repr__()
+                #discard = raw_input('press enter')
+                if not explored.exists(newState):
+                    frontier.append(newNode)
+                    explored.add(newNode.state)
+        frontierLen = frontier.__len__()
+        if frontierLen == 0:
+            done = True
+    print 'Found a solution from initial state:'
+    print initialNode.__repr__()
+    print 'Using path: ' + str(solution.solution())
+    print 'Solution found:'
+    print solution.__repr__()
+    return solution  
+            
+        
