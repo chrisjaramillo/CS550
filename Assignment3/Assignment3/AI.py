@@ -9,10 +9,10 @@ class Strategy(AbstractStrategy.Strategy):
     '''
     classdocs
     '''
-
-
     def __init__(self, player, game, maxplies):
-        '''
-        Constructor
-        '''
+        super(Strategy, self).__init__(player, game, maxplies)
         
+    def utility(self, board):
+        print 'utility'
+    def play(self, board):
+        print 'play'
