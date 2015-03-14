@@ -71,7 +71,7 @@ class CheckerBoard(Board):
     # by kings
     shortest_tour = 4
     
-    # class methods - useful for evluation methods
+    # class methods - useful for evaluation methods
     @classmethod
     def piece_types(cls, player):
         """piece_types - Return pawn and king values for specified player
@@ -79,7 +79,7 @@ class CheckerBoard(Board):
         """
         
         try:
-            index = cls.pieces.index(player)
+            index = cls.pawns.index(player)
         except ValueError:
             raise ValueError("No such player")
         
@@ -245,11 +245,31 @@ class CheckerBoard(Board):
     def clearboard(self):
         """clearboard - remove all pieces
         Useful for building specific board configurations
+        WARNING:  Piece counts will be incorrect after calling
+        this.  Call update_counts() to correct.
         """
         
         # Iterate over every piece and remove it
         for (r, c, piece) in self:
             self.place(r, c, None)
+    
+    def update_counts(self):
+        """update_counts - When mucking around with the board, the counts
+        of pawns and kings may be corrupted.  This method updates them.  Valid
+        moves will not cause any problems, this is mainly for testing. 
+        """
+        self.pawnsN = [0, 0]
+        self.kingsN = [0, 0]
+        
+        # Iterate through pieces
+        for (_r, _c, piece) in self:
+            # Find player index and piece type
+            (playerId, kingP) = self.identifypiece(piece)
+            # update appropriate player piece count
+            if kingP:
+                self.kingsN[playerId] += 1
+            else:
+                self.pawnsN[playerId] += 1
         
     def place(self, row, col, piece):
         "place(row, col, piece) - put a piece on the board"
