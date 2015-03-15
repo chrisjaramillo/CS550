@@ -10,8 +10,8 @@ import checkerboard
 
 def Game(red=AI.Strategy, black=Human.Strategy, init=None, maxplies=8, verbose=False):
     sharedBoard = checkerboard.CheckerBoard()
-    redplayer = red('r',sharedBoard, maxplies)
-    blackplayer = black('b',sharedBoard, maxplies)
+    redplayer = red('r',checkerboard.CheckerBoard(), maxplies)
+    blackplayer = black('b',checkerboard.CheckerBoard(), maxplies)
     moveCount = 0
     gameComplete = False 
     winner = None
