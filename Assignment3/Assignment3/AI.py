@@ -4,7 +4,7 @@ Created on Mar 12, 2015
 @author: Christopher
 '''
 import AbstractStrategy
-from operator import or_
+from checkerboard import CheckerBoard
 
 class Strategy(AbstractStrategy.Strategy):
     '''
@@ -16,67 +16,77 @@ class Strategy(AbstractStrategy.Strategy):
     def alphaBetaSearch(self, board):
         startAlpha = float('-inf')
         startBeta = float('inf')
-        bestMove = None
-        bestValue = 0
-        for action in board.get_actions(self.maxplayer):
-            value, alpha = self.maxValue(board, startAlpha, startBeta, action)
-            if value > bestValue:
-                bestValue = value
-                bestMove = action 
-        return bestMove
+        v, alpha, move = self.maxValue(board, startAlpha, startBeta)
+        print 'Chose move: ' + str(move) + ' with value: ' + str(v) 
+        return move
 
-    def maxValue(self, board, alpha, beta, action, plies=0):
-        board = board.move(action)
+    def maxValue(self, board, alpha, beta, plies=0):
+        move = None
         terminal, winner = board.is_terminal()
         if terminal or plies == self.maxplies:
-            return self.utility(board, winner, board.playeridx(self.maxplayer)), alpha
+            return self.utility(board), alpha, move
         else:
             v = float('-inf')
-            for action in board.get_actions(self.maxplayer):
-                retval, beta = self.minValue(board, alpha, beta, action, plies+1)
-                v = max(v, retval)
+            for action in reversed(board.get_actions(self.maxplayer)):
+                retval, beta, aMove = self.minValue(board.move(action), alpha, beta, plies+1)
+                if v < retval:
+                    v = retval
+                    move = action
                 if v >= beta:
                     break
                 else:
                     alpha = max(alpha, v)
-            return v, alpha
+            return v, alpha, move
         
-    def minValue(self, board, alpha, beta, action, plies=0):
-        board = board.move(action)
+    def minValue(self, board, alpha, beta, plies=0):
+        move = None
         terminal, winner = board.is_terminal()
         if terminal or plies == self.maxplies:
-            return self.utility(board, winner, board.playeridx(self.minplayer)), beta
+            return self.utility(board), beta, move
         else:
             v = float('inf')
             for action in board.get_actions(self.minplayer):
-                retval, alpha = self.maxValue(board, alpha, beta, action, plies + 1) 
-                v = min(v, retval)
+                retval, alpha, aMove = self.maxValue(board.move(action), alpha, beta, plies+1)
+                if v > retval:
+                    v = retval
+                    move = action
                 if v <= alpha:
                     break
                 else:
-                    beta = min (beta, v)
-            return v, beta
+                    beta = max(beta, v)
+            return v, beta, move
         
-    def utility(self, board, winner, playerIndex):
-        if winner == self.maxplayer:
-            return 1
-        elif winner == self.minplayer:
-            return 0
+    def utility(self, board):
+        terminal, winner = board.is_terminal()
+        if terminal:
+            if winner is self.maxplayer:
+                return 200
+            else:
+                return -200
         else:
-            return self.evaluate(board, playerIndex)
+            return self.evaluate(board)
 
-    def evaluate(self, board, playerIndex):
-        totalValue = 0
-        for piece in board:
-            pidx, isKing = board.identifypiece(piece)
-            if pidx == playerIndex:
-                if isKing:
-                    totalValue += 2
-                else:
-                    totalValue += 1
-        return totalValue
+    def evaluate(self, board):
+        pieceCount = 0
+        kingCount = 0 
+
+        playerIndex = CheckerBoard.playeridx(self.maxplayer)
+        for row, column, piece in board:
+            playeridx, king = CheckerBoard.identifypiece(piece)
+            if playeridx == playerIndex:
+                pieceCount += 1
+                if king:
+                    kingCount += 1
+            else:
+                pieceCount -= 1
+                if king:
+                    kingCount -= 1
+        return pieceCount +  (2*kingCount) 
         
     def play(self, board):
+        print 'AI is thinking...'
         move = self.alphaBetaSearch(board)
-        print 'AI has chosen move: ' + str(move)
-        return board.move(move), move
+        if move != None:
+            return board.move(move), move
+        else:
+            return board, []

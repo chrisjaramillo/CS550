@@ -7,8 +7,9 @@ Created on Mar 12, 2015
 import AI
 import Human
 import checkerboard
+import Tonto
 
-def Game(red=AI.Strategy, black=Human.Strategy, init=None, maxplies=8, verbose=False):
+def Game(red=AI.Strategy, black=Tonto.Strategy, init=None, maxplies=10, verbose=False):
     sharedBoard = checkerboard.CheckerBoard()
     redplayer = red('r',checkerboard.CheckerBoard(), maxplies)
     blackplayer = black('b',checkerboard.CheckerBoard(), maxplies)
@@ -23,16 +24,15 @@ def Game(red=AI.Strategy, black=Human.Strategy, init=None, maxplies=8, verbose=F
             sharedBoard, move = blackplayer.play(sharedBoard)
         moveCount += 1
         gameComplete, winner = sharedBoard.is_terminal()
-    print 'The winner is: ' + winner
-
-class MyClass(object):
-    '''
-    classdocs
-    '''
-
-
-    def __init__(self, params):
-        '''
-        Constructor
-        '''
-        
+        if not gameComplete:
+            if move == []:
+                gameComplete = True
+                if (moveCount % 2) == 0:
+                    winner = 'r'
+                else:
+                    winner = 'b'
+    print sharedBoard
+    if winner is None:
+        print 'tie'
+    else:
+        print 'The winner is: ' + winner
