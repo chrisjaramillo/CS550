@@ -67,22 +67,65 @@ class Strategy(AbstractStrategy.Strategy):
             return self.evaluate(board)
 
     def evaluate(self, board):
-        pieceCount = 0
-        kingCount = 0 
-
+        pieceCount = self.totalPieces(board)
+        kingCount = self.totalKings(board) 
+        distanceToKing = self.distanceToKings(board)
+        pieceDefense = self.pieceDefense(board)
+        return pieceCount + (2*kingCount) + (3*distanceToKing) + (4*pieceDefense)
+    
+    def totalPieces(self, board):
+        pieces = 0
         playerIndex = CheckerBoard.playeridx(self.maxplayer)
         for row, column, piece in board:
             playeridx, king = CheckerBoard.identifypiece(piece)
             if playeridx == playerIndex:
-                pieceCount += 1
-                if king:
-                    kingCount += 1
+                pieces += 1
             else:
-                pieceCount -= 1
+                pieces -= 1
+        return pieces
+    
+    def totalKings(self, board):
+        kings = 0
+        playerIndex = CheckerBoard.playeridx(self.maxplayer)
+        for row, column, piece in board:
+            playeridx, king = CheckerBoard.identifypiece(piece)
+            if playeridx == playerIndex:
                 if king:
-                    kingCount -= 1
-        return pieceCount +  (2*kingCount) 
-        
+                    kings += 1
+            else:
+                if king:
+                    kings -= 1
+        return kings
+                
+    def distanceToKings(self, board):
+        distance = 0
+        playerIndex = CheckerBoard.playeridx(self.maxplayer)
+        for row, column, piece in board:
+            playeridx, king = CheckerBoard.identifypiece(piece)
+            if playeridx == playerIndex:
+                if not king:
+                    distance += board.disttoking(self.maxplayer, row)
+            else:
+                if not king:
+                    distance -= board.disttoking(self.minplayer, row)
+        return distance
+    
+    def pieceDefense(self, board):
+        defense = 0
+        playerIndex = CheckerBoard.playeridx(self.maxplayer)
+        for row, column, piece in board:
+            playeridx, king = CheckerBoard.identifypiece(piece)
+            if playeridx == playerIndex:
+                if not king:
+                    defense += self.positionDefense(board, row, column)
+            else:
+                if not king:
+                    defense -= self.positionDefense(board, row, column)                                
+        return defense
+    
+    def positionDefense(self, board, row, column):
+        return 0
+                        
     def play(self, board):
         print 'AI is thinking...'
         move = self.alphaBetaSearch(board)
