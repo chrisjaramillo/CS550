@@ -124,6 +124,16 @@ class Strategy(AbstractStrategy.Strategy):
         return defense
     
     def positionDefense(self, board, row, column):
+        '''
+        black is looking for pieces in higher number rows
+        red is looking for pieces in lower number rows
+        '''
+        if  self.maxplayer is 'r':
+            left = [-1 -1]
+            right = [-1 1]
+        else:
+            left = [1 -1]
+            right = [1 1] 
         return 0
                         
     def play(self, board):

@@ -7,9 +7,9 @@ Created on Mar 12, 2015
 import AI
 import Human
 import checkerboard
-import Tonto
+#import Tonto
 
-def Game(red=AI.Strategy, black=Tonto.Strategy, init=None, maxplies=8, verbose=False):
+def Game(red=AI.Strategy, black=Human.Strategy, init=None, maxplies=8, verbose=False):
     sharedBoard = checkerboard.CheckerBoard()
     redplayer = red('r',checkerboard.CheckerBoard(), maxplies)
     blackplayer = black('b',checkerboard.CheckerBoard(), maxplies)
