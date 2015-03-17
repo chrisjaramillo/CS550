@@ -23,7 +23,8 @@ class Strategy(AbstractStrategy.Strategy):
     def maxValue(self, board, alpha, beta, plies=0):
         move = None
         terminal, winner = board.is_terminal()
-        if terminal or plies == self.maxplies:
+        if terminal:
+            '''or plies == self.maxplies'''
             return self.utility(board), alpha, move
         else:
             v = float('-inf')
@@ -41,7 +42,8 @@ class Strategy(AbstractStrategy.Strategy):
     def minValue(self, board, alpha, beta, plies=0):
         move = None
         terminal, winner = board.is_terminal()
-        if terminal or plies == self.maxplies:
+        if terminal: 
+            '''or plies == self.maxplies'''
             return self.utility(board), beta, move
         else:
             v = float('inf')
@@ -53,17 +55,14 @@ class Strategy(AbstractStrategy.Strategy):
                 if v <= alpha:
                     break
                 else:
-                    beta = max(beta, v)
+                    beta = min(beta, v)
             return v, beta, move
         
     def utility(self, board):
-        #terminal, winner = board.is_terminal()
-        #if terminal:
-        #    if winner is self.maxplayer:
-        #        return 20000000
-        #    else:
-        #        return -20000000
-        #else:
+        '''
+        Utility evaluation adapted from suggested evaluation functions at:
+        http://cs.nyu.edu/courses/fall12/CSCI-GA.2560-001/Checkers/Checkers_3.pdf
+        '''
         return self.evaluate(board)
 
     def evaluate(self, board):
@@ -72,9 +71,12 @@ class Strategy(AbstractStrategy.Strategy):
         distanceToKing = self.distanceToKings(board)
         pieceDefense = self.pieceDefense(board)
         edgePieces = self.edgePieces(board)
-        return pieceCount + kingCount + distanceToKing + edgePieces + pieceDefense
+        return pieceCount + kingCount + edgePieces + distanceToKing#+ 2*kingCount + 3*distanceToKing + 5*edgePieces + 4*pieceDefense
     
     def totalPieces(self, board):
+        '''
+        How many pieces do I have - how many does the other player have
+        '''
         pieces = 0
         playerIndex = CheckerBoard.playeridx(self.maxplayer)
         for row, column, piece in board:
@@ -86,6 +88,9 @@ class Strategy(AbstractStrategy.Strategy):
         return pieces
     
     def edgePieces(self, board):
+        '''
+        How many pieces do I have on the edges
+        '''
         pieces = 0
         playerIndex = CheckerBoard.playeridx(self.maxplayer)
         for row, column, piece in board:
@@ -104,6 +109,9 @@ class Strategy(AbstractStrategy.Strategy):
         return pieces
     
     def totalKings(self, board):
+        '''
+        How many kings do I have - how many does the other player have
+        '''
         kings = 0
         playerIndex = CheckerBoard.playeridx(self.maxplayer)
         for row, column, piece in board:
@@ -117,6 +125,9 @@ class Strategy(AbstractStrategy.Strategy):
         return kings
                 
     def distanceToKings(self, board):
+        '''
+        How far is each side from being "Kinged"
+        '''
         distance = 0
         playerIndex = CheckerBoard.playeridx(self.maxplayer)
         for row, column, piece in board:
@@ -124,9 +135,9 @@ class Strategy(AbstractStrategy.Strategy):
             if playeridx == playerIndex:
                 if not king:
                     distance -= board.disttoking(self.maxplayer, row)
-            else:
-                if not king:
-                    distance += board.disttoking(self.minplayer, row)
+            #else:
+            #    if not king:
+            #        distance += board.disttoking(self.minplayer, row)
         return distance
     
     def pieceDefense(self, board):
@@ -138,10 +149,10 @@ class Strategy(AbstractStrategy.Strategy):
                 if not king:
                     defense += self.positionDefense(board, row, column)
                     defense += self.kingDefense(board, row, column)
-            else:
-                if not king:
-                    defense -= self.positionDefense(board, row, column)
-                    defense -= self.kingDefense(board, row, column)                                
+            #else:
+            #    if not king:
+            #        defense -= self.positionDefense(board, row, column)
+            #        defense -= self.kingDefense(board, row, column)                                
         return defense
     
     def positionDefense(self, board, row, column):
