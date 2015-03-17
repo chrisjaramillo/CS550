@@ -128,13 +128,30 @@ class Strategy(AbstractStrategy.Strategy):
         black is looking for pieces in higher number rows
         red is looking for pieces in lower number rows
         '''
+        defense = 0
+        left = None
+        right = None
+        matches = None
         if  self.maxplayer is 'r':
-            left = [-1 -1]
-            right = [-1 1]
+            left = [-1, -1]
+            right = [-1, 1]
+            matches = ['r', 'R']
         else:
-            left = [1 -1]
-            right = [1 1] 
-        return 0
+            left = [1 ,-1]
+            right = [1, 1]
+            matches = ['b', 'B']
+        leftRow = row + int(left[0])
+        leftColumn = column + int(left[1])
+        rightRow = row + int(right[0])
+        rightColumn = column + int(right[1])
+        
+        if board.onboard(leftRow, leftColumn):
+            if board.board[leftRow][leftColumn] in matches:
+                defense +=1
+        if board.onboard(rightRow, rightColumn):
+            if board.board[rightRow][rightColumn] in matches:
+                defense +=1
+        return defense
                         
     def play(self, board):
         print 'AI is thinking...'

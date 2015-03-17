@@ -240,7 +240,7 @@ class CheckerBoard(Board):
     
     def isempty(self, row, col):
         "isempty - Is the specified space empty?"
-        return self.board[row, col] == None
+        return self.board[row][col] == None
     
     def clearboard(self):
         """clearboard - remove all pieces
