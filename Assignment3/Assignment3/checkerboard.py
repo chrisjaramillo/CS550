@@ -1,5 +1,6 @@
 '''
 Created on Feb 21, 2015
+Modified Mar 16, 2015 - fixed disttoking
 
 @author: mroch
 '''
@@ -220,14 +221,13 @@ class CheckerBoard(Board):
     
     def disttoking(self, player, row):
         "disttoking - how many rows from king position for player given row"
-        
-        idx = self.playeridx(player)
+    
         # find row offset of any legal move for a pawn
-        direction = self.pawns[idx][0][0]  
+        direction = self.pawnmoves[player][0][0]  
         if direction < 0:
-            distance = row - self.kingrows[0]
+            distance = row  # red
         else:
-            distance = self.kingrows[1] - row
+            distance = self.rows -1 - row  # black
         return distance        
     
     def get_pawnsN(self):
@@ -240,7 +240,7 @@ class CheckerBoard(Board):
     
     def isempty(self, row, col):
         "isempty - Is the specified space empty?"
-        return self.board[row][col] == None
+        return self.board[row, col] == None
     
     def clearboard(self):
         """clearboard - remove all pieces

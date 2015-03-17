@@ -57,21 +57,22 @@ class Strategy(AbstractStrategy.Strategy):
             return v, beta, move
         
     def utility(self, board):
-        terminal, winner = board.is_terminal()
-        if terminal:
-            if winner is self.maxplayer:
-                return 200
-            else:
-                return -200
-        else:
-            return self.evaluate(board)
+        #terminal, winner = board.is_terminal()
+        #if terminal:
+        #    if winner is self.maxplayer:
+        #        return 20000000
+        #    else:
+        #        return -20000000
+        #else:
+        return self.evaluate(board)
 
     def evaluate(self, board):
         pieceCount = self.totalPieces(board)
         kingCount = self.totalKings(board) 
         distanceToKing = self.distanceToKings(board)
         pieceDefense = self.pieceDefense(board)
-        return pieceCount + (2*kingCount) + (3*distanceToKing) + (4*pieceDefense)
+        edgePieces = self.edgePieces(board)
+        return pieceCount + kingCount + distanceToKing + edgePieces + pieceDefense
     
     def totalPieces(self, board):
         pieces = 0
@@ -82,6 +83,24 @@ class Strategy(AbstractStrategy.Strategy):
                 pieces += 1
             else:
                 pieces -= 1
+        return pieces
+    
+    def edgePieces(self, board):
+        pieces = 0
+        playerIndex = CheckerBoard.playeridx(self.maxplayer)
+        for row, column, piece in board:
+            playeridx, king = CheckerBoard.identifypiece(piece)
+            if playeridx == playerIndex:
+                if row is 0 or column is 0 or row is 7 or column is 7:
+                    pieces += 10
+                if king:
+                    if (row is 0 and column is 0) or (row is 0 and column is 7) or (row is 7 and column is 0) or (row is 7 and column is 7):
+                        pieces += 100
+            else:
+                if row is 0 or column is 0 or row is 7 or column is 7:
+                    pieces -= 1
+                if (row is 0 and column is 0) or (row is 0 and column is 7) or (row is 7 and column is 0) or (row is 7 and column is 7):
+                    pieces -= 1
         return pieces
     
     def totalKings(self, board):
@@ -104,10 +123,10 @@ class Strategy(AbstractStrategy.Strategy):
             playeridx, king = CheckerBoard.identifypiece(piece)
             if playeridx == playerIndex:
                 if not king:
-                    distance += board.disttoking(self.maxplayer, row)
+                    distance -= board.disttoking(self.maxplayer, row)
             else:
                 if not king:
-                    distance -= board.disttoking(self.minplayer, row)
+                    distance += board.disttoking(self.minplayer, row)
         return distance
     
     def pieceDefense(self, board):
@@ -118,13 +137,16 @@ class Strategy(AbstractStrategy.Strategy):
             if playeridx == playerIndex:
                 if not king:
                     defense += self.positionDefense(board, row, column)
+                    defense += self.kingDefense(board, row, column)
             else:
                 if not king:
-                    defense -= self.positionDefense(board, row, column)                                
+                    defense -= self.positionDefense(board, row, column)
+                    defense -= self.kingDefense(board, row, column)                                
         return defense
     
     def positionDefense(self, board, row, column):
         '''
+        The pieces here are asking if they are defended
         black is looking for pieces in higher number rows
         red is looking for pieces in lower number rows
         '''
@@ -139,6 +161,37 @@ class Strategy(AbstractStrategy.Strategy):
         else:
             left = [1 ,-1]
             right = [1, 1]
+            matches = ['b', 'B']
+        leftRow = row + int(left[0])
+        leftColumn = column + int(left[1])
+        rightRow = row + int(right[0])
+        rightColumn = column + int(right[1])
+        
+        if board.onboard(leftRow, leftColumn):
+            if board.board[leftRow][leftColumn] in matches:
+                defense +=1
+        if board.onboard(rightRow, rightColumn):
+            if board.board[rightRow][rightColumn] in matches:
+                defense +=1
+        return defense
+    
+    def kingDefense(self, board, row, column):
+        '''
+        the pieces here are asking if there are peices behind them to defend kings
+        black is looking for pieces in lower number rows
+        red is looking for pieces in higher number rows
+        '''
+        defense = 0
+        left = None
+        right = None
+        matches = None
+        if  self.maxplayer is 'r':
+            left = [1, -1]
+            right = [1, 1]
+            matches = ['r', 'R']
+        else:
+            left = [-1 ,-1]
+            right = [-1, 1]
             matches = ['b', 'B']
         leftRow = row + int(left[0])
         leftColumn = column + int(left[1])

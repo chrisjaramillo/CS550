@@ -9,7 +9,7 @@ import Human
 import checkerboard
 import Tonto
 
-def Game(red=AI.Strategy, black=Human.Strategy, init=None, maxplies=8, verbose=False):
+def Game(red=AI.Strategy, black=Tonto.Strategy, init=None, maxplies=8, verbose=False):
     sharedBoard = checkerboard.CheckerBoard()
     redplayer = red('r',checkerboard.CheckerBoard(), maxplies)
     blackplayer = black('b',checkerboard.CheckerBoard(), maxplies)
@@ -23,6 +23,7 @@ def Game(red=AI.Strategy, black=Human.Strategy, init=None, maxplies=8, verbose=F
         else:
             sharedBoard, move = blackplayer.play(sharedBoard)
         moveCount += 1
+        print sharedBoard
         gameComplete, winner = sharedBoard.is_terminal()
         if not gameComplete:
             if move == []:
@@ -33,6 +34,6 @@ def Game(red=AI.Strategy, black=Human.Strategy, init=None, maxplies=8, verbose=F
                     winner = 'b'
     print sharedBoard
     if winner is None:
-        print 'tie'
+        print 'Tie in ' + str(moveCount) + ' moves.'
     else:
-        print 'The winner is: ' + winner
+        print 'The winner is: ' + winner + ' in ' + str(moveCount) + ' moves.'
