@@ -16,20 +16,24 @@ class Strategy(AbstractStrategy.Strategy):
     def alphaBetaSearch(self, board):
         startAlpha = float('-inf')
         startBeta = float('inf')
-        v, alpha, move = self.maxValue(board, startAlpha, startBeta)
+        v, move = self.maxValue(board, startAlpha, startBeta)
         print 'Chose move: ' + str(move) + ' with value: ' + str(v) 
         return move
 
     def maxValue(self, board, alpha, beta, plies=0):
         move = None
         terminal, winner = board.is_terminal()
-        if terminal:
-            '''or plies == self.maxplies'''
-            return self.utility(board), alpha, move
+        if terminal :
+            return self.utility(board), move
+        elif plies == self.maxplies:
+            return self.utility(board), move
         else:
             v = float('-inf')
-            for action in reversed(board.get_actions(self.maxplayer)):
-                retval, beta, aMove = self.minValue(board.move(action), alpha, beta, plies+1)
+            actions = board.get_actions(self.maxplayer)
+            for action in actions:
+                retval, aMove = self.minValue(board.move(action), alpha, beta, plies+1)
+                if plies is 0:
+                    print 'evaluated action: ' + str(action) + ' to have value: ' + str(retval)
                 if v < retval:
                     v = retval
                     move = action
@@ -37,18 +41,19 @@ class Strategy(AbstractStrategy.Strategy):
                     break
                 else:
                     alpha = max(alpha, v)
-            return v, alpha, move
+            return v, move
         
     def minValue(self, board, alpha, beta, plies=0):
         move = None
         terminal, winner = board.is_terminal()
-        if terminal: 
-            '''or plies == self.maxplies'''
-            return self.utility(board), beta, move
+        if terminal :
+            return self.utility(board), move
+        elif plies == self.maxplies:
+            return self.utility(board), move
         else:
             v = float('inf')
             for action in board.get_actions(self.minplayer):
-                retval, alpha, aMove = self.maxValue(board.move(action), alpha, beta, plies+1)
+                retval, aMove = self.maxValue(board.move(action), alpha, beta, plies+1)
                 if v > retval:
                     v = retval
                     move = action
@@ -56,13 +61,9 @@ class Strategy(AbstractStrategy.Strategy):
                     break
                 else:
                     beta = min(beta, v)
-            return v, beta, move
+            return v, move
         
     def utility(self, board):
-        '''
-        Utility evaluation adapted from suggested evaluation functions at:
-        http://cs.nyu.edu/courses/fall12/CSCI-GA.2560-001/Checkers/Checkers_3.pdf
-        '''
         return self.evaluate(board)
 
     def evaluate(self, board):
@@ -71,7 +72,7 @@ class Strategy(AbstractStrategy.Strategy):
         distanceToKing = self.distanceToKings(board)
         pieceDefense = self.pieceDefense(board)
         edgePieces = self.edgePieces(board)
-        return pieceCount + kingCount + edgePieces + distanceToKing#+ 2*kingCount + 3*distanceToKing + 5*edgePieces + 4*pieceDefense
+        return 10*pieceCount + 20*kingCount + 5*edgePieces + pieceDefense + distanceToKing
     
     def totalPieces(self, board):
         '''
@@ -97,15 +98,7 @@ class Strategy(AbstractStrategy.Strategy):
             playeridx, king = CheckerBoard.identifypiece(piece)
             if playeridx == playerIndex:
                 if row is 0 or column is 0 or row is 7 or column is 7:
-                    pieces += 10
-                if king:
-                    if (row is 0 and column is 0) or (row is 0 and column is 7) or (row is 7 and column is 0) or (row is 7 and column is 7):
-                        pieces += 100
-            else:
-                if row is 0 or column is 0 or row is 7 or column is 7:
-                    pieces -= 1
-                if (row is 0 and column is 0) or (row is 0 and column is 7) or (row is 7 and column is 0) or (row is 7 and column is 7):
-                    pieces -= 1
+                    pieces += 1
         return pieces
     
     def totalKings(self, board):
@@ -218,7 +211,6 @@ class Strategy(AbstractStrategy.Strategy):
         return defense
                         
     def play(self, board):
-        print 'AI is thinking...'
         move = self.alphaBetaSearch(board)
         if move != None:
             return board.move(move), move
