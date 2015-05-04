@@ -55,6 +55,9 @@ def calcInfoGain(data):
     i = 0
     for attribute in attributeNames:
         print "\nAttribute " + str(attribute) 
+        attrDict = {}
+        attrPos = 0
+        attrNeg = 0
         for abbreviation in abbreviations[attribute]:
             count = 0
             posCount = 0
@@ -64,22 +67,38 @@ def calcInfoGain(data):
                     count += 1
                     if example[-1] == 'e':
                         posCount += 1
+                        attrPos += 1
                     else:
-                        negCount +=1       
+                        negCount +=1
+                        attrNeg += 1       
             #print str(abbreviation) + ': ' + str(count) + ' pos: ' + str(posCount) + ' neg: ' + str(negCount)
-            q = 0.0
-            if (posCount + negCount) > 0:
-                q = float(posCount)/(float(posCount)+float(negCount))
-            if ((q - 0.0) < 0.0000001) or (posCount == count):
-                Bq = 0
-            else:
-                Bq = (-1*q*log2(q)*q)-((1-q)*log2(1-q))
-            print str(abbreviation) + ': ' + str(count) + ' pos: ' + str(posCount) + ' neg: ' + str(negCount) + ' q: ' + str(q) + ' Bq: ' + str(Bq)
+            Bq, q = calcBq(posCount, negCount, count)
+            #print str(abbreviation) + ': ' + str(count) + ' pos: ' + str(posCount) + ' neg: ' + str(negCount) + ' q: ' + str(q) + ' Bq: ' + str(Bq)
+            abbrvList = [posCount, negCount, Bq]
+            attrDict[abbreviation] = abbrvList
         i = i+1
+        attrBq, attrq = calcBq(attrPos, attrNeg, (attrPos + attrNeg))
+        remain = 0
+        for attr in attrDict.keys():
+            #print str(attr) + ' : ' + str(attrDict[attr])
+            attrList = attrDict[attr]
+            relPart = float(attrList[0] + attrList[1])/float(attrPos+attrNeg)
+            remain += relPart * attrList[2]
+            print 'Variable: ' + str(attr) + ' positive: ' + str(attrList[0]) + ' negative: ' + str(attrList[1]) + ' Bq: ' + str(attrList[2])
+        print "Gain( " + str(attribute) + " ): " + str(attrBq - remain)
         #print abbreviations[attribute]
         #print len(abbreviations[attribute])
         #print abbreviations.keys()
-    
+def calcBq(positive, negative, count):
+    q = 0.0
+    Bq = 0
+    if (positive + negative) > 0:
+        q = float(positive)/(float(positive)+float(negative))
+    if ((q - 0.0) < 0.0000001) or (positive == count):
+        Bq = 0
+    else:
+        Bq = (-1*q*log2(q)*q)-((1-q)*log2(1-q))
+    return Bq, q
         
 
 if __name__ == '__main__':
