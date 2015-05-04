@@ -1,7 +1,7 @@
 '''
 Created on Feb 22, 2015
 
-@author: cxj8923
+@author: Christopher Jaramillo
 '''
 
 class breadth_first():

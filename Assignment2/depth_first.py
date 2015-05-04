@@ -1,7 +1,7 @@
 '''
 Created on Feb 22, 2015
 
-@author: cxj8923
+@author: Christopher Jaramillo
 '''
 
 class depth_first():
@@ -9,7 +9,6 @@ class depth_first():
         '''
         Constructor
         '''
-        print 'ahhaha'
     @classmethod
     def g(cls, parentnode, action, childnode):
         '''

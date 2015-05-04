@@ -1,7 +1,7 @@
 '''
 Created on Feb 23, 2015
 
-@author: Christopher
+@author: Christopher Jaramillo
 '''
 from NPuzzle import NPuzzle
 from utils import *

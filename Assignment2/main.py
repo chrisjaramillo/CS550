@@ -1,7 +1,7 @@
 '''
 Created on Feb 24, 2015
 
-@author: Christopher
+@author: Christopher Jaramillo
 '''
 
 from GraphSearch import graph_search
